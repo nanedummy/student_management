@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import api from '../../api/axios'
 import Pagination from '../../components/Pagination'
-import ClayDatePicker from '../../components/ClayDatePicker'
+import DatePicker from '../../components/DatePicker'
 
 const STATUS_BADGE = { present: 'badge-success', absent: 'badge-danger', late: 'badge-warning', excused: 'badge-gray' }
 
@@ -131,7 +131,7 @@ export default function AttendanceModule() {
                         {[1,2,3,4,5,6,7,8].map(p => <option key={p} value={p}>Period {p}</option>)}
                       </select>
                     ) : n === 'date' ? (
-                      <ClayDatePicker name={n} value={form[n]} onChange={set} required={true} />
+                      <DatePicker name={n} value={form[n]} onChange={set} required={true} />
                     ) : (
                       <input type={t} name={n} value={form[n]} onChange={set} required={['date'].includes(n)} className="form-control" />
                     )}

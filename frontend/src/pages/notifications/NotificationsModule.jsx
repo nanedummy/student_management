@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import api from '../../api/axios'
+import useAuth from '../../hooks/useAuth'
+import DatePicker from '../../components/DatePicker'
 
 const TYPE_COLOR = { info: '#2563eb', warning: '#f59e0b', success: '#22c55e', alert: '#ef4444' }
 const TYPE_ICON  = {
@@ -11,6 +13,8 @@ const TYPE_ICON  = {
 const DEFAULT_ICON = <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>
 
 export default function NotificationsModule() {
+  const { user } = useAuth()
+  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin'
   const [notifications, setNotifications] = useState([])
   const [showForm, setShowForm]           = useState(false)
   const [form, setForm]                   = useState({ title: '', message: '', notif_type: 'info', target: 'all', expires_at: '' })
@@ -57,14 +61,16 @@ export default function NotificationsModule() {
       <div className="page-header" style={{ marginBottom: 0 }}>
         <div><h1>Notifications</h1><p>Broadcast announcements to users</p></div>
         <div style={{ display: 'flex', gap: 10 }}>
-          {notifications.length > 0 && (
+          {isAdmin && notifications.length > 0 && (
             <button className="btn btn-outline" style={{ borderColor: 'var(--danger)', color: 'var(--danger)', padding: '0 12px' }} onClick={deleteAll} title="Delete All Notifications">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
               </svg>
             </button>
           )}
-          <button className="btn btn-primary" onClick={() => setShowForm(s => !s)}>+ New Notification</button>
+          {isAdmin && (
+            <button className="btn btn-primary" onClick={() => setShowForm(s => !s)}>+ New Notification</button>
+          )}
         </div>
       </div>
 
@@ -85,10 +91,10 @@ export default function NotificationsModule() {
                 <label className="form-label">Target Audience</label>
                 <select name="target" value={form.target} onChange={set}>
                   <option value="all">All</option><option value="students">Students</option>
-                  <option value="faculty">Faculty</option><option value="staff">Staff</option><option value="parents">Parents</option>
+                  <option value="faculty">Faculty</option><option value="staff">Staff</option><option value="admin">Admin</option><option value="parents">Parents</option>
                 </select>
               </div>
-              <div className="form-group"><label className="form-label">Expires At (optional)</label><input type="datetime-local" name="expires_at" value={form.expires_at} onChange={set} /></div>
+              <div className="form-group"><label className="form-label">Expires At (optional)</label><DatePicker name="expires_at" value={form.expires_at} onChange={set} /></div>
             </div>
             <div className="form-group"><label className="form-label">Message</label><textarea name="message" value={form.message} onChange={set} rows={3} required /></div>
             <div className="form-actions">
@@ -135,10 +141,12 @@ export default function NotificationsModule() {
                         {n.expires_at && ` · Expires: ${new Date(n.expires_at).toLocaleDateString('en-IN')}`}
                       </div>
                     </div>
-                    <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
-                      <button className="btn btn-sm btn-outline" onClick={() => toggle(n.id, n.is_active)}>{n.is_active ? 'Deactivate' : 'Activate'}</button>
-                      <button className="btn btn-sm btn-danger" onClick={() => del(n.id)}>Delete</button>
-                    </div>
+                    {isAdmin && (
+                      <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+                        <button className="btn btn-sm btn-outline" onClick={(e) => { e.stopPropagation(); toggle(n.id, n.is_active) }}>{n.is_active ? 'Deactivate' : 'Activate'}</button>
+                        <button className="btn btn-sm btn-danger" onClick={(e) => { e.stopPropagation(); del(n.id) }}>Delete</button>
+                      </div>
+                    )}
                   </div>
                 )
               })}

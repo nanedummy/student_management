@@ -208,7 +208,7 @@ export default function AppRoutes() {
           <Route path="/users" element={R(ADMIN, <UserManagement />)} />
 
           {/* ── Notification Module ── */}
-          <Route path="/notifications" element={R(ADMIN, <NotificationsModule />)} />
+          <Route path="/notifications" element={<ProtectedRoute><NotificationsModule /></ProtectedRoute>} />
 
           {/* ── Reports & Analytics Module ── */}
           <Route path="/reports" element={R(ADMIN, <ReportsAnalytics />)} />

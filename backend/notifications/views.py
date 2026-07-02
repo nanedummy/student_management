@@ -22,7 +22,13 @@ class NotificationViewSet(viewsets.ModelViewSet):
         qs = super().get_queryset()
         target = self.request.query_params.get('target')
         active = self.request.query_params.get('active')
-        if target: qs = qs.filter(target__in=[target, 'all'])
+        user = self.request.user
+        
+        if user.role not in ('admin', 'super_admin'):
+            qs = qs.filter(target__in=['all', user.role])
+        elif target: 
+            qs = qs.filter(target__in=[target, 'all'])
+            
         if active: qs = qs.filter(is_active=active == 'true')
         return qs
 
