@@ -25,7 +25,14 @@ class NotificationViewSet(viewsets.ModelViewSet):
         user = self.request.user
         
         if user.role not in ('admin', 'super_admin'):
-            qs = qs.filter(target__in=['all', user.role])
+            user_target = user.role
+            if user.role == 'student':
+                user_target = 'students'
+            elif user.role == 'parent':
+                user_target = 'parents'
+            elif user.role not in ('faculty', 'admin', 'super_admin'):
+                user_target = 'staff'
+            qs = qs.filter(target__in=['all', user_target])
         elif target: 
             qs = qs.filter(target__in=[target, 'all'])
             
