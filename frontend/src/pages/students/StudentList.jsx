@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { getStudents, deleteStudent } from '../../services/studentService'
 import { getFaculty } from '../../services/facultyService'
+import api from '../../api/axios'
 import Loader from '../../components/Loader'
 import Pagination from '../../components/Pagination'
 import useAuth from '../../hooks/useAuth'
@@ -48,17 +49,29 @@ export default function StudentList() {
   const [totalPages, setTotalPages] = useState(1)
   const [showBulkModal, setShowBulkModal] = useState(false)
 
-  const load = (p = params) => {
+  const load = async (p = params) => {
     setLoading(true)
-    getStudents(p).then(r => {
-      if (r.data.results) {
-        setStudents(r.data.results)
-        setTotalPages(r.data.total_pages)
-      } else {
-        setStudents(r.data)
-        setTotalPages(1)
-      }
-    }).finally(() => setLoading(false))
+    try {
+      const res = await getStudents(p)
+      setStudents(res.data.results || res.data)
+      setTotalPages(res.data.total_pages || 1)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleToggleStatus = async (student, e) => {
+    e.stopPropagation()
+    if (!canEdit) return
+    const newStatus = student.status === 'active' ? 'inactive' : 'active'
+    try {
+      await api.patch(`/students/${student.id}/`, { status: newStatus })
+      setStudents(sts => sts.map(s => s.id === student.id ? { ...s, status: newStatus } : s))
+    } catch (err) {
+      alert('Failed to update status')
+    }
   }
 
   useEffect(() => { load({ ...params, page: 1 }) }, [])
@@ -165,7 +178,16 @@ export default function StudentList() {
                     <td style={{ color: s.attendance_percentage >= 75 ? 'var(--success)' : s.attendance_percentage != null ? 'var(--danger)' : 'inherit' }}>
                       {s.attendance_percentage != null ? `${Number(s.attendance_percentage).toFixed(1)}%` : '—'}
                     </td>
-                    <td><span className={`badge ${statusBadge(s.status)}`}>{s.status}</span></td>
+                    <td>
+                      <span 
+                        className={`badge ${statusBadge(s.status)}`}
+                        onClick={(e) => handleToggleStatus(s, e)}
+                        style={{ cursor: canEdit ? 'pointer' : 'default' }}
+                        title={canEdit ? 'Click to toggle status' : ''}
+                      >
+                        {s.status}
+                      </span>
+                    </td>
                     <td>
                       <ActionMenu
                         studentId={s.id}

@@ -138,8 +138,10 @@ export default function StudentPayFee() {
                     
                     <div style={{
                       marginTop: 16, padding: '8px 0', textAlign: 'center', fontSize: 13, fontWeight: 600, borderRadius: 6,
-                      background: isSelected ? 'var(--primary)' : '#e5e7eb',
-                      color: isSelected ? '#fff' : 'var(--text-muted)',
+                      background: isSelected ? 'var(--primary)' : 'var(--bg-light)',
+                      color: isSelected ? '#fff' : 'var(--text)',
+                      border: isSelected ? '1px solid var(--primary)' : '1px solid var(--border)',
+                      transition: 'all 0.2s',
                     }}>
                       {isSelected ? 'Selected' : 'Select to Pay'}
                     </div>
@@ -162,20 +164,20 @@ export default function StudentPayFee() {
           {error && <div className="alert alert-error" style={{ borderRadius: 0, borderLeft: 'none', borderRight: 'none' }}>{error}</div>}
           
           <div className="card-body">
-            <div style={{ background: '#f8fafc', borderRadius: 8, padding: 20, marginBottom: 20 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12, paddingBottom: 12, borderBottom: '1px dashed #cbd5e1' }}>
+            <div style={{ background: 'var(--bg-light)', borderRadius: 8, padding: 20, marginBottom: 20 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12, paddingBottom: 12, borderBottom: '1px dashed var(--border)' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Student</span>
                 <span style={{ fontWeight: 600 }}>{student.first_name} {student.last_name}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12, paddingBottom: 12, borderBottom: '1px dashed #cbd5e1' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12, paddingBottom: 12, borderBottom: '1px dashed var(--border)' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Roll No</span>
                 <span style={{ fontWeight: 600 }}>{student.register_number}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12, paddingBottom: 12, borderBottom: '1px dashed #cbd5e1' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12, paddingBottom: 12, borderBottom: '1px dashed var(--border)' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Course</span>
                 <span style={{ fontWeight: 600 }}>{student.course}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid #cbd5e1' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid var(--border)' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Fee Type</span>
                 <span style={{ fontWeight: 600 }}>{selected.fee_type}</span>
               </div>

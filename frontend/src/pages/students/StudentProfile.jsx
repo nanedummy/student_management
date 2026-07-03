@@ -49,6 +49,16 @@ export default function StudentProfile() {
     }
   }
 
+  const handleToggleStatus = async () => {
+    try {
+      const newStatus = student.status === 'active' ? 'inactive' : 'active'
+      await api.patch(`/students/${id}/`, { status: newStatus })
+      setStudent(s => ({ ...s, status: newStatus }))
+    } catch (err) {
+      alert('Failed to update status')
+    }
+  }
+
   if (!student) return <Loader />
   if (!student.id) return <div style={{ padding: 32, textAlign: 'center', color: 'var(--danger)' }}>Profile not found or access denied.</div>
 
@@ -77,6 +87,11 @@ export default function StudentProfile() {
           </div>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
+          {canEdit && (
+            <button onClick={handleToggleStatus} className="btn btn-outline">
+              {student.status === 'active' ? 'Deactivate' : 'Activate'}
+            </button>
+          )}
           {canEdit && <button onClick={() => navigate(`/students/${id}/edit`)} className="btn btn-primary">Edit</button>}
           {canDelete && <button onClick={handleDelete} className="btn btn-danger">Delete</button>}
         </div>
@@ -129,6 +144,15 @@ export default function StudentProfile() {
             ['Year', `Year ${student.year}`],
             ['Joined', formatDate(student.created_at)],
             ['Address', student.address || '—'],
+            ['Nationality', student.nationality || '—'],
+            ['Religion', student.religion || '—'],
+            ['Community', student.community || '—'],
+            ['Caste', student.caste || '—'],
+            ['Mother Tongue', student.mother_tongue || '—'],
+            ['Blood Group', student.blood_group || '—'],
+            ['Aadhar ID', student.aadhar_id || '—'],
+            ['Identification Mark', student.identification_mark || '—'],
+            ['Board Curriculum', student.board_curriculum || '—'],
           ].map(([label, value]) => (
             <div key={label} className="profile-item">
               <div className="profile-item-label">{label}</div>
@@ -137,6 +161,86 @@ export default function StudentProfile() {
           ))}
         </div>
       </div>
+
+      {/* Bank Details */}
+      <div className="card" style={{ marginBottom: 16 }}>
+        <div className="card-body">
+          <h3 style={{ marginBottom: 12 }}>Bank Details</h3>
+          <div className="profile-grid">
+            {[
+              ['Account Holder Name', student.bank_account_holder_name || '—'],
+              ['Account Number', student.bank_account_number || '—'],
+              ['Bank Name', student.bank_name || '—'],
+              ['Branch Name', student.bank_branch_name || '—'],
+              ['IFSC Code', student.bank_ifsc_code || '—'],
+              ['Account Type', student.bank_account_type || '—'],
+            ].map(([label, value]) => (
+              <div key={label} className="profile-item">
+                <div className="profile-item-label">{label}</div>
+                <div className="profile-item-value">{value}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Documents */}
+      {(student.marksheet_10th || student.marksheet_12th) && (
+        <div className="card" style={{ marginBottom: 16 }}>
+          <div className="card-body">
+            <h3 style={{ marginBottom: 12 }}>Documents</h3>
+            <div style={{ display: 'flex', gap: 16 }}>
+              {student.marksheet_10th && <a href={student.marksheet_10th} target="_blank" rel="noreferrer" className="btn btn-outline">10th Marksheet</a>}
+              {student.marksheet_12th && <a href={student.marksheet_12th} target="_blank" rel="noreferrer" className="btn btn-outline">12th Marksheet</a>}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Parents Details */}
+      <div className="card" style={{ marginBottom: 16 }}>
+        <div className="card-body">
+          <h3 style={{ marginBottom: 12 }}>Parents Details</h3>
+          <div className="profile-grid">
+            {[
+              ["Father's Name", student.father_name || '—'],
+              ["Father's Occupation", student.father_occupation || '—'],
+              ["Father's Annual Income (₹)", student.father_annual_income || '—'],
+              ["Mother's Name", student.mother_name || '—'],
+              ["Mother's Occupation", student.mother_occupation || '—'],
+              ["Mother's Annual Income (₹)", student.mother_annual_income || '—'],
+            ].map(([label, value]) => (
+              <div key={label} className="profile-item">
+                <div className="profile-item-label">{label}</div>
+                <div className="profile-item-value">{value}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Guardian Details */}
+      {student.has_guardian && (
+        <div className="card" style={{ marginBottom: 16 }}>
+          <div className="card-body">
+            <h3 style={{ marginBottom: 12 }}>Guardian Details</h3>
+            <div className="profile-grid">
+              {[
+                ["Guardian's Name", student.guardian_name || '—'],
+                ["Guardian's Number", student.guardian_number || '—'],
+                ["Relationship", student.guardian_relationship || '—'],
+                ["Guardian's Occupation", student.guardian_occupation || '—'],
+                ["Guardian's Annual Income (₹)", student.guardian_annual_income || '—'],
+              ].map(([label, value]) => (
+                <div key={label} className="profile-item">
+                  <div className="profile-item-label">{label}</div>
+                  <div className="profile-item-value">{value}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Set Password — admin only */}
       {isAdmin && (
